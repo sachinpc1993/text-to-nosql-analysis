@@ -1,0 +1,18 @@
+{
+  "model_mapping": {
+    "DeepSeekV32": "DeepSeek V3.2",
+    "GPTOSS20B": "GPT-OSS 20B",
+    "Sonnet46": "Sonnet 4.6",
+    "llama318b": "Llama 3.1 8B",
+    "gemma4e4b": "Gemma 4 4B"
+  },
+  "approach_mapping": {
+    "t1": "Schema + Fields",
+    "t1_ex": "Schema + Fields + Examples",
+    "t2": "CoT",
+    "t2_expcot": "ExpCoT",
+    "t3": "10-Shot",
+    "t3_k3": "3-Shot",
+    "t6_reflect": "Reflect + Repair"
+  }
+}
