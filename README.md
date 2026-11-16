@@ -125,6 +125,9 @@ well as the model; for T1-ex and T6, options include `--max-values` and
 
 ### T3: retrieval-augmented few-shot
 
+Set `--top-k 3` for 3-shot or `--top-k 10` for 10-shot; this controls how
+many retrieved training examples are included in the prompt.
+
 ```bash
 python systems/t3.py data/dev.csv \
   --run-name t3_llama318b \
@@ -167,31 +170,16 @@ Each run writes under `output/<run-name>/`:
 
 Use distinct `--run-name` values to keep experiment outputs separate.
 
-## Adding an approach such as `tx_method.py`
+## Extending `tx_method.py`
 
-For consistency, implement the approach as `systems/tx_method.py` and preserve
-the CSV and output conventions used by the existing systems.
+`systems/tx_method.py` is a starter skeleton for a new approach. Its
+`build_prompt()` function is the main place to add the method-specific
+instructions, examples, or context. Keep the shared CSV input and prediction
+output format consistent with the other systems so runs remain comparable.
+The skeleton uses the shared LiteLLM, MongoDB schema, and output-cleaning
+helpers; it generates queries but does not execute them.
 
-1. **Define the method.** Specify the prompt, examples, schema context, or
-   other novel mechanism that distinguishes the approach. Keep the model,
-   dataset split, and any retrieval corpus fixed when comparing methods.
-2. **Reuse shared helpers.** Call `litellm_call.call_llm` for model requests,
-   use `mongo_client.get_database_schema` and `schema_to_text` if the method
-   needs schema grounding, and use `llm_output_utils.clean_llm_output` to
-   normalize model responses. Avoid duplicating provider and MongoDB setup.
-3. **Keep the query contract stable.** Ask the model for valid JSON in the
-   shape `{"collection": "...", "pipeline": [...]}` and validate that the
-   collection and pipeline are present before formatting the result as a
-   MongoDB aggregation query. Decide explicitly whether the approach only
-   generates queries or also executes and evaluates them.
-4. **Use a compatible CLI and output.** A useful interface would accept a
-   positional input CSV plus required `--run-name` and optional `--model`,
-   like the existing scripts. Read the required CSV columns above and write
-   `output/<run-name>/predictions.csv` and `errors.csv` with compatible
-   fields. This allows downstream comparisons without approach-specific
-   preprocessing.
-
-For example, an invocation with that interface looks like this:
+Example invocation:
 
 ```bash
 python systems/tx_method.py data/dev.csv \
